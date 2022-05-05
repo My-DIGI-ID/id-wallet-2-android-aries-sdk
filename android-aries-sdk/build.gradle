@@ -1,0 +1,45 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.31'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+tasks.withType(Test) {
+    useJUnitPlatform()
+    jvmArgs '--enable-preview'
+}
+
+dependencies {
+    implementation 'org.hyperledger:indy:1.16.0'
+
+    implementation "io.insert-koin:koin-core:3.1.5"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-native-mt'
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
+    implementation 'com.squareup.okhttp3:okhttp:4.9.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2'
+    implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
+    testImplementation 'org.mockito.kotlin:mockito-kotlin:4.0.0'
+    testImplementation 'io.ktor:ktor-client-mock:1.6.7'
+    testImplementation "io.insert-koin:koin-test:3.1.5"
+}
+task deleteJar(type: Delete) {
+    delete 'libs/jars/android_aries_sdk.jar'
+}
+
+task createJar(type: Copy) {
+    from('build/intermediates/bundles/release/')
+    into('libs/jars/')
+    include('classes.jar')
+    rename('classes.jar', 'android_aries_sdk.jar')
+}
+
+createJar.dependsOn(deleteJar, build)
